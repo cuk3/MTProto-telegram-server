@@ -24,8 +24,8 @@ fi
 SECRET=$(head -c 16 /dev/urandom | xxd -ps)
 echo "🔑 Сгенерирован секрет: $SECRET"
 
-# 3. Определяем IP
-IP=$(curl -s ifconfig.me || curl -s icanhazip.com || hostname -I | awk '{print $1}')
+# 3. Определяем IP (принудительно IPv4)
+IP=$(curl -4 -s ifconfig.me || curl -4 -s icanhazip.com || hostname -I | awk '{print $1}')
 echo "🌐 IP сервера: $IP"
 
 # 4. Создаём конфиг
