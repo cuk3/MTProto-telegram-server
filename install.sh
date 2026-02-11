@@ -20,9 +20,11 @@ else
     echo "   ✅ Docker уже установлен"
 fi
 
-# 2. Секрет
-SECRET=$(head -c 16 /dev/urandom | xxd -ps)
-echo "🔑 Сгенерирован секрет: $SECRET"
+# 2. Генерируем fake-TLS секрет
+# Формат: ee + 16 случайных байт + 7777772e676f6f676c652e636f6d (www.google.com)
+RAND_PART=$(head -c 16 /dev/urandom | xxd -ps -c 256)
+SECRET="ee${RAND_PART}7777772e676f6f676c652e636f6d"
+echo "🔑 Сгенерирован fake-TLS секрет"
 
 # 3. Определяем IP (принудительно IPv4)
 IP=$(curl -4 -s ifconfig.me || curl -4 -s icanhazip.com || hostname -I | awk '{print $1}')
@@ -32,7 +34,7 @@ echo "🌐 IP сервера: $IP"
 mkdir -p /opt/mtg
 cat > /opt/mtg/config.toml <<EOF
 secret = "${SECRET}"
-bind-to = "0.0.0.0:443"
+bind-to = "0.0.0.0:3128"
 prefer-ip = "prefer-ipv4"
 allow-fallback-on-unknown-dc = true
 concurrency = 8192
@@ -54,11 +56,8 @@ docker rm -f mtg 2>/dev/null || true
 echo "🚀 Запускаю прокси..."
 docker run -d \
     --name mtg \
-    --network host \
     --restart always \
-    --dns 1.1.1.1 \
-    --dns 8.8.8.8 \
-    --ulimit nofile=65536:65536 \
+    -p 443:3128 \
     -v /opt/mtg/config.toml:/config.toml:ro \
     nineseconds/mtg:2 run /config.toml >/dev/null
 
