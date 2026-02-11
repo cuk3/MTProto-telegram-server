@@ -1,4 +1,4 @@
-# 🛡 MTProto Proxy для Telegram
+# 🛡 Обход блокировки телеграм в России с помощью MTProto прокси
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-nineseconds%2Fmtg%3A2-2496ED?logo=docker&logoColor=white)](https://hub.docker.com/r/nineseconds/mtg)
